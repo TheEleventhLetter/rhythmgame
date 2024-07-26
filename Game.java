@@ -12,9 +12,9 @@ public class Game {
     public Game(Pane tilePane, Pane buttonPane){
         this.tempo = 120;
         this.alley = new TileAlley(tilePane, this);
-        this.setUpButtonPane(buttonPane);
+        this.setUpButtonPane(buttonPane, tilePane);
     }
-    private void setUpButtonPane(Pane buttonPane){
+    private void setUpButtonPane(Pane buttonPane, Pane tilePane){
         Button quitButton = new Button("Quit");
         quitButton.setPrefHeight(Constants.BUTTON_HEIGHT);
         quitButton.setPrefWidth(Constants.BUTTON_WIDTH);
@@ -25,7 +25,11 @@ public class Game {
         startButton.setPrefHeight(Constants.BUTTON_HEIGHT);
         startButton.setPrefWidth(Constants.BUTTON_WIDTH);
         startButton.setStyle("-fx-background-color: #ffffff");
-        startButton.setOnAction((ActionEvent e) -> this.alley.startGame());
+        startButton.setOnAction((ActionEvent e) -> this.startGame(tilePane));
         buttonPane.getChildren().addAll(quitButton, startButton);
+    }
+
+    private void startGame(Pane tilePane){
+        this.alley.startGame(tilePane);
     }
 }

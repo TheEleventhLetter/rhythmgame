@@ -9,8 +9,11 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeType;
 
+import java.util.LinkedList;
+
 public class TileAlley {
     private HitLine hitLine;
+    private LinkedList<HitNotes> notes;
 
     public TileAlley(Pane tilePane, Game game){
         this.setUpAlleyLane(tilePane);
@@ -34,7 +37,15 @@ public class TileAlley {
         this.hitLine = new HitLine(tilePane);
 
     }
-    public void startGame(){
+    public void startGame(Pane tilePane){
+        this.sendNote(tilePane);
+    }
 
+    private void sendNote(Pane tilePane){
+        HitNotes currNote = new HitNotes(tilePane, this.getLaneNum());
+    }
+    private int getLaneNum(){
+        int rand = (int)(Math.random() * 4) + 1;
+        return rand;
     }
 }

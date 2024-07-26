@@ -14,6 +14,6 @@ public class Constants {
     public static final double LINE_START_INCREMENT = 100.0;
     public static final double LINE_END_INCREMENT = 300.0;
     public static final double HIT_LINE_HEIGHT = 350.0;
-
+    public static final int NOTE_HEIGHT = 2;
 
 }
