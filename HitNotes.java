@@ -32,7 +32,7 @@ public class HitNotes {
         this.note.setX(Constants.STARTING_X_VALUE + ((laneNum - 2) * Constants.LINE_START_INCREMENT));
         this.note.setY(0);
         this.note.setFill(Color.BLUEVIOLET);
-        System.out.println("WAH");
+        this.note.setStrokeWidth(5.0);
         tilePane.getChildren().addAll(this.note);
     }
     private void startTimeline(){

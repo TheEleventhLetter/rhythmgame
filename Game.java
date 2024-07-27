@@ -26,10 +26,18 @@ public class Game {
         startButton.setPrefWidth(Constants.BUTTON_WIDTH);
         startButton.setStyle("-fx-background-color: #ffffff");
         startButton.setOnAction((ActionEvent e) -> this.startGame(tilePane));
+        Button stopButton = new Button("Stop");
+        stopButton.setPrefHeight(Constants.BUTTON_HEIGHT);
+        stopButton.setPrefWidth(Constants.BUTTON_WIDTH);
+        stopButton.setStyle("-fx-background-color: #ffffff");
+        stopButton.setOnAction((ActionEvent e) -> this.stopGame());
         buttonPane.getChildren().addAll(quitButton, startButton);
     }
 
     private void startGame(Pane tilePane){
         this.alley.startGame(tilePane);
+    }
+    private void stopGame(){
+        this.alley.stopGame();
     }
 }
