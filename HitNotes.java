@@ -13,32 +13,36 @@ import javafx.util.Duration;
 public class HitNotes {
     private Rectangle note;
     private Timeline timeline;
+    private int laneNum;
+    private Pane tilePane;
 
-    public HitNotes(Pane tilePane, int laneNum){
-        this.setUpTimeline(tilePane, laneNum);
-        this.generateNote(tilePane, laneNum);
+    public HitNotes(Pane tilePane, int laneNum, TileAlley myAlley){
+        this.laneNum = laneNum;
+        this.tilePane = tilePane;
+        this.setUpTimeline(myAlley);
+        this.generateNote();
         this.startTimeline();
     }
 
-    private void setUpTimeline(Pane tilePane, int laneNum){
-        KeyFrame kf = new KeyFrame(Duration.millis(10), (ActionEvent e) -> this.moveNote(tilePane, laneNum));
+    private void setUpTimeline(TileAlley myAlley){
+        KeyFrame kf = new KeyFrame(Duration.millis(10), (ActionEvent e) -> this.moveNote(this.laneNum, myAlley));
         this.timeline = new Timeline(kf);
         this.timeline.setCycleCount(Animation.INDEFINITE);
     }
-    private void generateNote(Pane tilePane, int laneNum){
+    private void generateNote(){
         this.note = new Rectangle();
         this.note.setWidth(Constants.LINE_START_INCREMENT);
         this.note.setHeight(Constants.NOTE_HEIGHT);
-        this.note.setX(Constants.STARTING_X_VALUE + ((laneNum - 2) * Constants.LINE_START_INCREMENT));
+        this.note.setX(Constants.STARTING_X_VALUE + ((this.laneNum - 2) * Constants.LINE_START_INCREMENT));
         this.note.setY(0);
         this.note.setFill(Color.BLUEVIOLET);
         this.note.setStrokeWidth(5.0);
-        tilePane.getChildren().addAll(this.note);
+        this.tilePane.getChildren().addAll(this.note);
     }
     private void startTimeline(){
         this.timeline.play();
     }
-    private void moveNote(Pane tilePane, int laneNum){
+    private void moveNote(int laneNum, TileAlley myAlley){
         switch (laneNum){
             case 1:
                 this.note.setY(this.note.getY() + 2);
@@ -61,7 +65,20 @@ public class HitNotes {
                 break;
         }
         if (this.note.getY() > Constants.SCENE_HEIGHT){
-            tilePane.getChildren().remove(this.note);
+            this.tilePane.getChildren().remove(this.note);
+            myAlley.removeNote(this, this.laneNum);
         }
+    }
+    public void removeNoteVisual(){
+        this.tilePane.getChildren().remove(this.note);
+    }
+    public double getX(){
+        return this.note.getX();
+    }
+    public double getY(){
+        return this.note.getY();
+    }
+    public double getWidth(){
+        return this.note.getWidth();
     }
 }

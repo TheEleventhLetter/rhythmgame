@@ -17,9 +17,10 @@ public class PaneOrganizer {
         buttonPane.setPrefSize(Constants.SCENE_WIDTH, Constants.BUTTONPANE_HEIGHT);
         buttonPane.setStyle("-fx-background-color: #809ee0");
         buttonPane.setPadding(new Insets(10, 10, 10, 10));
+        buttonPane.setSpacing(10.0);
+        new Game(tilePane, buttonPane);
         this.root.setTop(buttonPane);
         this.root.setCenter(tilePane);
-        new Game(tilePane, buttonPane);
     }
 
     public Pane getRoot(){
