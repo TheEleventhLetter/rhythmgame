@@ -14,20 +14,20 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeType;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 public class TileAlley {
     private HitLine[] lanes;
     private ArrayList<HitNotes>[] notes;
     private Timeline timeline;
     private Game myGame;
+    private int currNoteNum;
 
     public TileAlley(Pane tilePane, Game game){
         this.myGame = game;
         this.notes = new ArrayList[4];
         this.lanes = new HitLine[4];
+        this.currNoteNum = 0;
         this.setUpTimeline(tilePane);
         this.setUpAlleyLane(tilePane);
     }
@@ -58,50 +58,44 @@ public class TileAlley {
         }
     }
     public void setUpTimeline(Pane tilePane){
-        KeyFrame kf = new KeyFrame((Duration.seconds(1)), (ActionEvent e) -> this.sendNote(tilePane));
+        KeyFrame kf = new KeyFrame((Duration.millis(150)), (ActionEvent e) -> this.sendNote(tilePane));
         this.timeline = new Timeline(kf);
         this.timeline.setCycleCount(Animation.INDEFINITE);
     }
-    public void startGame(Pane tilePane){
-        this.timeline.play();
+
+    public void startGame(){
+        int delayTimer = 0;
+        KeyFrame kf = new KeyFrame((Duration.millis(5500)), (ActionEvent e) -> this.timeline.play());
+        Timeline delayTimeline = new Timeline(kf);
+        delayTimeline.play();
     }
+
     public void stopGame(){
         this.timeline.stop();
     }
 
     private void sendNote(Pane tilePane){
         int laneNum = this.getLaneNum();
-        HitNotes currNote = new HitNotes(tilePane, laneNum, this);
-        this.notes[laneNum - 1].add(currNote);
+        if (laneNum != 0) {
+            HitNotes currNote = new HitNotes(tilePane, laneNum, this);
+            this.notes[laneNum - 1].add(currNote);
+        }
     }
     public void removeNote(HitNotes remNote, int myLane){
         this.notes[myLane - 1].remove(remNote);
     }
     private int getLaneNum(){
-        int rand = (int)(Math.random() * 4) + 1;
-        return rand;
+        try {
+            int laneNum = Constants.NOTE_INFO[this.currNoteNum];
+            this.currNoteNum++;
+            return laneNum;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return 0;
+        }
     }
     public void hitLane(int laneNum){
-        switch (laneNum){
-            case 1:
-                this.lanes[0].glowUp();
-                this.checkIntersection(1);
-                break;
-            case 2:
-                this.lanes[1].glowUp();
-                this.checkIntersection(2);
-                break;
-            case 3:
-                this.lanes[2].glowUp();
-                this.checkIntersection(3);
-                break;
-            case 4:
-                this.lanes[3].glowUp();
-                this.checkIntersection(4);
-                break;
-            default:
-                break;
-        }
+        this.lanes[laneNum - 1].glowUp();
+        this.checkIntersection(laneNum);
     }
 
     public void checkIntersection(int laneNum){
@@ -112,6 +106,8 @@ public class TileAlley {
                 this.myGame.addPoint();
                 lastNote.removeNoteVisual();
                 this.removeNote(lastNote, laneNum);
+            } else {
+                this.myGame.removePoint();
             }
         }
 

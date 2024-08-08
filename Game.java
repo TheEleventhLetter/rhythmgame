@@ -9,7 +9,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
+
+import java.io.File;
 
 public class Game {
 
@@ -18,12 +22,14 @@ public class Game {
     private boolean isPlaying;
     private int score;
     private Label scoreLabel;
+    private boolean songPlayed;
 
     public Game(Pane tilePane, HBox buttonPane){
         this.score = 0;
         this.isPlaying = false;
         this.tempo = 120;
         this.alley = new TileAlley(tilePane, this);
+        this.songPlayed = false;
         this.setUpButtonPane(buttonPane, tilePane);
         this.setUpTilePane(tilePane);
     }
@@ -38,7 +44,7 @@ public class Game {
         startButton.setPrefHeight(Constants.BUTTON_HEIGHT);
         startButton.setPrefWidth(Constants.BUTTON_WIDTH);
         startButton.setStyle("-fx-background-color: #ffffff");
-        startButton.setOnAction((ActionEvent e) -> this.startGame(tilePane));
+        startButton.setOnAction((ActionEvent e) -> this.startGame());
         startButton.setFocusTraversable(false);
         Button stopButton = new Button("Stop");
         stopButton.setPrefHeight(Constants.BUTTON_HEIGHT);
@@ -58,9 +64,11 @@ public class Game {
         tilePane.setFocusTraversable(true);
     }
 
-    private void startGame(Pane tilePane){
+
+    private void startGame(){
         this.isPlaying = true;
-        this.alley.startGame(tilePane);
+        this.playSong();
+        this.alley.startGame();
     }
     private void stopGame(){
         this.isPlaying = false;
@@ -72,19 +80,15 @@ public class Game {
             switch (keyPressed) {
                 case D:
                     this.alley.hitLane(1);
-                    System.out.println("D");
                     break;
                 case F:
                     this.alley.hitLane(2);
-                    System.out.println("F");
                     break;
                 case J:
                     this.alley.hitLane(3);
-                    System.out.println("J");
                     break;
                 case K:
                     this.alley.hitLane(4);
-                    System.out.println("K");
                     break;
                 default:
                     break;
@@ -97,4 +101,19 @@ public class Game {
         this.score++;
         this.scoreLabel.setText(String.valueOf(this.score));
     }
+    public void removePoint(){
+        this.score--;
+        this.scoreLabel.setText(String.valueOf(this.score));
+    }
+    private MediaPlayer mediaPlayer;
+    private void playSong(){
+        if (!this.songPlayed) {
+            String bip = "src/rhythmgame/kageroudays.mp3";
+            Media song = new Media(new File(bip).toURI().toString());
+            this.mediaPlayer = new MediaPlayer(song);
+            this.mediaPlayer.play();
+            this.songPlayed = true;
+        }
+    }
+
 }
