@@ -14,6 +14,8 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Game {
 
@@ -74,6 +76,11 @@ public class Game {
         this.isPlaying = false;
         this.alley.stopGame();
     }
+    public void endGame(){
+        this.isPlaying = false;
+        this.startFadeIn();
+        this.alley.stopGame();
+    }
     private void handleKeyPress(KeyEvent e) {
         KeyCode keyPressed = e.getCode();
         if (this.isPlaying){
@@ -114,6 +121,39 @@ public class Game {
             this.mediaPlayer.play();
             this.songPlayed = true;
         }
+    }
+    float volume = 1;
+
+    private void startFadeIn(){
+        final int FADE_DURATION = 3000; //The duration of the fade
+        //The amount of time between volume changes. The smaller this is, the smoother the fade
+        final int FADE_INTERVAL = 250;
+        final int MAX_VOLUME = 1; //The volume will increase from 0 to 1
+        int numberOfSteps = FADE_DURATION/FADE_INTERVAL; //Calculate the number of fade steps
+        //Calculate by how much the volume changes each step
+        final float deltaVolume = MAX_VOLUME / (float)numberOfSteps;
+
+        //Create a new Timer and Timer task to run the fading outside the main UI thread
+        final Timer timer = new Timer(true);
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                Game.this.fadeInStep(deltaVolume); //Do a fade step
+                //Cancel and Purge the Timer if the desired volume has been reached
+                if(Game.this.volume >=1f){
+                    timer.cancel();
+                    timer.purge();
+                }
+            }
+        };
+
+        timer.schedule(timerTask,FADE_INTERVAL,FADE_INTERVAL);
+    }
+
+    private void fadeInStep(float deltaVolume){
+        this.mediaPlayer.setVolume(this.volume);
+        this.volume -= deltaVolume;
+
     }
 
 }

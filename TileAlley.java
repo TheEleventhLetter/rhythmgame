@@ -65,7 +65,7 @@ public class TileAlley {
 
     public void startGame(){
         int delayTimer = 0;
-        KeyFrame kf = new KeyFrame((Duration.millis(5500)), (ActionEvent e) -> this.timeline.play());
+        KeyFrame kf = new KeyFrame((Duration.millis(5530)), (ActionEvent e) -> this.timeline.play());
         Timeline delayTimeline = new Timeline(kf);
         delayTimeline.play();
     }
@@ -75,22 +75,26 @@ public class TileAlley {
     }
 
     private void sendNote(Pane tilePane){
-        int laneNum = this.getLaneNum();
-        if (laneNum != 0) {
-            HitNotes currNote = new HitNotes(tilePane, laneNum, this);
-            this.notes[laneNum - 1].add(currNote);
+        int[] laneNums = this.getLaneNum();
+        for (int laneNum : laneNums){
+            if (laneNum == 200){
+                this.myGame.endGame();
+            } else if (laneNum != 0) {
+                HitNotes currNote = new HitNotes(tilePane, laneNum, this);
+                this.notes[laneNum - 1].add(currNote);
+            }
         }
     }
     public void removeNote(HitNotes remNote, int myLane){
         this.notes[myLane - 1].remove(remNote);
     }
-    private int getLaneNum(){
+    private int[] getLaneNum(){
         try {
-            int laneNum = Constants.NOTE_INFO[this.currNoteNum];
+            int[] laneNum = Constants.NOTE_INFO[this.currNoteNum];
             this.currNoteNum++;
             return laneNum;
         } catch (ArrayIndexOutOfBoundsException e) {
-            return 0;
+            return new int[]{0};
         }
     }
     public void hitLane(int laneNum){
