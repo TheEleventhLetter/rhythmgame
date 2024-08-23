@@ -15,10 +15,12 @@ public class HitNotes {
     private Timeline timeline;
     private int laneNum;
     private Pane tilePane;
+    private boolean isOutOfBounds;
 
     public HitNotes(Pane tilePane, int laneNum, TileAlley myAlley){
         this.laneNum = laneNum;
         this.tilePane = tilePane;
+        this.isOutOfBounds = false;
         this.setUpTimeline(myAlley);
         this.generateNote();
         this.startTimeline();
@@ -39,7 +41,7 @@ public class HitNotes {
         this.note.setStrokeWidth(5.0);
         this.tilePane.getChildren().addAll(this.note);
     }
-    private void startTimeline(){
+    public void startTimeline(){
         this.timeline.play();
     }
     private void moveNote(int laneNum, TileAlley myAlley){
@@ -67,7 +69,14 @@ public class HitNotes {
         if (this.note.getY() > Constants.SCENE_HEIGHT){
             this.tilePane.getChildren().remove(this.note);
             myAlley.removeNote(this, this.laneNum);
+            if (!this.isOutOfBounds){
+                myAlley.removePoint();
+                this.isOutOfBounds = true;
+            }
         }
+    }
+    public void stopMoving(){
+        this.timeline.stop();
     }
     public void removeNoteVisual(){
         this.tilePane.getChildren().remove(this.note);

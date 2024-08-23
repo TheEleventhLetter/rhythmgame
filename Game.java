@@ -1,5 +1,8 @@
 package rhythmgame;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -11,7 +14,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.util.Timer;
@@ -23,11 +28,16 @@ public class Game {
     private int tempo;
     private boolean isPlaying;
     private int score;
+    private int countDown;
     private Label scoreLabel;
+    private Label countDownLabel;
     private boolean songPlayed;
+    private Duration resumeLength;
 
     public Game(Pane tilePane, HBox buttonPane){
+        this.resumeLength = null;
         this.score = 0;
+        this.countDown = 3;
         this.isPlaying = false;
         this.tempo = 120;
         this.alley = new TileAlley(tilePane, this);
@@ -46,7 +56,7 @@ public class Game {
         startButton.setPrefHeight(Constants.BUTTON_HEIGHT);
         startButton.setPrefWidth(Constants.BUTTON_WIDTH);
         startButton.setStyle("-fx-background-color: #ffffff");
-        startButton.setOnAction((ActionEvent e) -> this.startGame());
+        startButton.setOnAction((ActionEvent e) -> this.startGame(tilePane));
         startButton.setFocusTraversable(false);
         Button stopButton = new Button("Stop");
         stopButton.setPrefHeight(Constants.BUTTON_HEIGHT);
@@ -58,6 +68,7 @@ public class Game {
         this.scoreLabel.setFont(new Font(20));
         this.scoreLabel.setAlignment(Pos.CENTER_RIGHT);
 
+
         buttonPane.getChildren().addAll(quitButton, startButton, stopButton, this.scoreLabel);
         buttonPane.setFocusTraversable(false);
     }
@@ -67,14 +78,44 @@ public class Game {
     }
 
 
-    private void startGame(){
+    private void startGame(Pane tilePane){
         this.isPlaying = true;
         this.playSong();
         this.alley.startGame();
+        this.startCountDown(tilePane);
+    }
+    private void startCountDown(Pane tilePane){
+        this.countDownLabel = new Label(String.valueOf(this.countDown));
+        this.countDownLabel.setFont(new Font(100));
+        this.countDownLabel.setTextFill(Color.LAWNGREEN);
+        this.countDownLabel.setAlignment(Pos.CENTER);
+
+        tilePane.getChildren().add(this.countDownLabel);
+        KeyFrame kf = new KeyFrame((Duration.seconds(1)), (ActionEvent e) -> this.updateCountDown(tilePane));
+        Timeline countDownTimeline = new Timeline(kf);
+        countDownTimeline.setCycleCount(4);
+        countDownTimeline.play();
+    }
+    private void updateCountDown(Pane tilePane){
+        if (this.countDown != 0){
+            this.countDown--;
+            this.countDownLabel.setText(String.valueOf(this.countDown));
+        } else {
+            tilePane.getChildren().remove(this.countDownLabel);
+        }
     }
     private void stopGame(){
-        this.isPlaying = false;
-        this.alley.stopGame();
+        if (this.isPlaying) {
+            this.isPlaying = false;
+            this.mediaPlayer.pause();
+            this.resumeLength = this.mediaPlayer.getCurrentTime();
+            this.alley.stopGame();
+        } else {
+            this.isPlaying = true;
+            this.mediaPlayer.play();
+            this.mediaPlayer.seek(this.resumeLength);
+            this.alley.resumeGame();
+        }
     }
     public void endGame(){
         this.isPlaying = false;

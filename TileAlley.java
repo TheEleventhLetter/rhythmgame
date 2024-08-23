@@ -70,8 +70,21 @@ public class TileAlley {
         delayTimeline.play();
     }
 
-    public void stopGame(){
+    public void stopGame() {
         this.timeline.stop();
+        for (ArrayList<HitNotes> currLane : this.notes) {
+            for (HitNotes note : currLane) {
+                note.stopMoving();
+            }
+        }
+    }
+    public void resumeGame(){
+        this.timeline.play();
+        for (ArrayList<HitNotes> currLane : this.notes) {
+            for (HitNotes note : currLane) {
+                note.startTimeline();
+            }
+        }
     }
 
     private void sendNote(Pane tilePane){
@@ -87,6 +100,9 @@ public class TileAlley {
     }
     public void removeNote(HitNotes remNote, int myLane){
         this.notes[myLane - 1].remove(remNote);
+    }
+    public void removePoint(){
+        this.myGame.removePoint();
     }
     private int[] getLaneNum(){
         try {
